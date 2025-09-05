@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<head>
+  <!-- Title -->
+  <title>Leveraging Analytic Gradients in Provably Safe Reinforcement Learning</title>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Leveraging Analytic Gradients in Provably Safe Reinforcement Learning">
+  <meta name="keywords"
+    content="Robotics Control, Policy Learning, Reinforcement Learning, Differentiable Simulation, Safe Reinforcement Learning">
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- https://fontawesome.com/cheatsheet -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+    integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
+
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-NMSCV9J5');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+<style>
+  .emoji {
+    font-family: "Twemoji Mozilla", "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", "Android Emoji", "EmojiSymbols", sans-serif;
+  }
+
+  .code-block-wrapper {
+    position: relative;
+    margin-top: 0;
+  }
+
+  .bibtex-pre {
+    background: #f8f9fb;
+    border: none;
+    box-shadow: 0 0 0 1px #e2e6ea inset, 0 2px 4px rgba(0, 0, 0, 0.04);
+    border-radius: 6px;
+    padding: 14px 56px 14px 16px;
+    /* right padding leaves room for button overlap */
+    overflow: auto;
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .bibtex-pre code {
+    background: transparent;
+    padding: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    display: block;
+    /* ensures consistent top alignment */
+  }
+
+  .copy-icon-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(2px);
+    border: 1px solid #d0d7de;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    padding: 4px 6px;
+    cursor: pointer;
+    color: #555;
+    line-height: 1;
+    font-size: 14px;
+    transition: background .15s, color .15s, border-color .15s;
+    z-index: 2;
+  }
+
+  .copy-icon-btn:hover {
+    background: #fff;
+    color: #000;
+  }
+
+  .copy-icon-btn:active {
+    background: #eef1f4;
+  }
+
+  .copy-icon-btn.copied {
+    background: #d1e7dd;
+    border-color: #9ac7b3;
+    color: #2e7d32;
+  }
+</style>
+
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NMSCV9J5" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <!-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> -->
+  <nav class="navbar navbar-expand-md fixed-top navbar-dark" style="background-color: #454545;">
+    <a class="navbar-brand" href="#">Safe AGB RL</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarToggle">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#Abstract">Abstract</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#Paper">Paper</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#Results">Results</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#Additional Results">Additional Results</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top: 80px; font-size: 20px">
+    <div align="center">
+      <h2 class="text-center" align="center">
+        Leveraging Analytic Gradients in Provably Safe Reinforcement Learning
+      </h2><br>
+      <h6>
+        <a href="https://www.ce.cit.tum.de/en/cps/members/tim-walter/">Tim
+          Walter</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://www.ce.cit.tum.de/cps/members/hannah-markgraf-msc/">Hannah
+          Markgraf</a><sup>†1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://www.ce.cit.tum.de/cps/members/jonathan-kuelz/">Jonathan
+          Külz</a><sup>†1,2</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://www.ce.cit.tum.de/cps/members/prof-dr-ing-matthias-althoff/">Matthias
+          Althoff</a><sup>1,2</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+      </h6>
+      <small>
+        <sup>†</sup> Equal Contribution &nbsp;&nbsp;&nbsp;&nbsp;
+        <sup>1</sup> Technical University of Munich (TUM) &nbsp;&nbsp;&nbsp;&nbsp;
+        <sup>2</sup> Munich Center for Machine Learning (MCML) &nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+  </div><br>
+
+  <div class="container" style="padding-top: 10px; font-size: 20px">
+    <div align="center">
+      <div class="center">
+        <img class="img-responsive img-rounded" src="pipeline.svg" style="width:90%" alt="">
+      </div>
+    </div>
+  </div><br><br>
+
+
+  <!-- Abstract -->
+  <div class="container">
+    <h4 id="Abstract" style="padding-top: 70px; margin-top: -80px; ">Abstract</h4>
+    <hr>
+    <div style="text-align: justify">
+      The deployment of autonomous robots in safety-critical applications requires safety guarantees. Provably safe
+      reinforcement learning is an active field of research that aims to provide such guarantees using safeguards. These
+      safeguards should be integrated during training to reduce the sim-to-real gap. While there are several approaches
+      for safeguarding sampling-based reinforcement learning, analytic gradient-based reinforcement learning often
+      achieves superior performance from fewer environment interactions. However, there is no safeguarding approach for
+      this learning paradigm yet. Our work addresses this gap by developing the first effective safeguard for analytic
+      gradient-based reinforcement learning. We analyse existing, differentiable safeguards, adapt them through modified
+      mappings and gradient formulations, and integrate them into a state-of-the-art learning algorithm and a
+      differentiable simulation. Using numerical experiments on three control tasks, we evaluate how different
+      safeguards affect learning. The results demonstrate safeguarded training without compromising performance.
+    </div>
+  </div><br><br>
+
+  <!-- Paper -->
+  <div class="container">
+    <h4 id="Paper" style="padding-top: 70px; margin-top: -80px;">Paper</h4>
+    <hr>
+
+    <div class="row">
+      <div class="col-md-12">
+        <b>Leveraging Analytic Gradients in Provably Safe Reinforcement Learning</b><br>
+
+        <a href="https://www.ce.cit.tum.de/en/cps/members/tim-walter/">Tim Walter</a>
+        <a href="https://www.ce.cit.tum.de/cps/members/hannah-markgraf-msc/">Hannah Markgraf</a>
+        <a href="https://www.ce.cit.tum.de/cps/members/jonathan-kuelz/">Jonathan Külz</a>
+        <a href="https://www.ce.cit.tum.de/cps/members/prof-dr-ing-matthias-althoff/">Matthias Althoff</a>
+
+        <i><a target="_blank" href="https://ojcsys.github.io/">
+            <font color="black">IEEE Open Journal of Control Systems (OJ-CSYS) 2025 </font>
+          </a></i><br>
+        <a target="_blank" href="https://openreview.net/forum?id=ZSKRQMvttc">[Paper]</a>&nbsp; <!-- TODO -->
+        <a target="_blank" href="https://arxiv.org/abs/2506.01665">[Arxiv]</a>&nbsp;
+        <a target="_blank" href="https://github.com/TimWalter/SafeGBPO">[Code]</a>&nbsp;
+        <a href="" data-toggle="modal" data-target="#bibtex">
+          [BibTeX]
+        </a>
+        <!-- Modal -->
+        <div class="modal fade" id="bibtex" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="bibtex-title">BibTeX</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <!-- Modal body snippet -->
+              <div class="modal-body">
+                <div class="code-block-wrapper">
+                  <pre id="bibtex-content" class="bibtex-pre"><code>@article{walter2025leveraging, <!-- TODO -->
+  author = {Walter, Tim and Markgraf, Hannah and K{\\"u}lz, Jonathan and Althoff, Matthias},
+  doi = {10.1109/OJCSYS.2025.}, <!-- TODO -->
+  journaltitle = {{IEEE} Open Journal of Control Systems},
+  pages = {},<!-- TODO -->
+  title = {Leveraging Analytic Gradients in Provably Safe Reinforcement Learning},
+  volume = {1}, <!-- TODO -->
+  year = {2025},
+}</code></pre>
+                  <button type="button" id="copy-bibtex" class="copy-icon-btn" aria-label="Copy BibTeX"
+                    title="Copy BibTeX">
+                    <i class="far fa-clone"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><br><br>
+
+  <!-- Results -->
+  <div class="container">
+    <h4 id="Results" style="padding-top: 30px; margin-top: -40px;">Results</h4>
+    <hr>
+    <br>
+    <h5> Learning with Short-Horizon Actor-Critic in unsafe training and safeguarded training. </h5>
+    <br>
+    <figure class="figure">
+      <img src="main_results.svg" class="figure-img img-fluid rounded">
+    </figure>
+  </div><br><br><br>
+
+  <!-- Additional Results -->
+  <div class="container">
+    <h4 id="Additional Results" style="padding-top: 30px; margin-top: -40px;">Additional Results</h4>
+    <hr>
+    <br>
+    <h5> Additional Evaluation Problem 1: Seeker Navigate </h5> <br>
+    <!-- TODO -->
+    TODO
+    <!--<div class="row">
+      <figure class="figure col-lg-4">
+        <img src="videos/cartpole_0.gif" class="figure-img img-fluid rounded">
+        <figcaption style="font-family:'Times New Roman';font-size:20px" class="figure-caption text-center">Episode 0
+        </figcaption>
+      </figure>
+      <figure class="figure col-lg-4">
+        <img src="videos/cartpole_1.gif" class="figure-img img-fluid rounded">
+        <figcaption style="font-family:'Times New Roman';font-size:20px" class="figure-caption text-center">Episode 50
+        </figcaption>
+        <figcaption style="font-family:'Times New Roman';font-size:20px" class="figure-caption text-center">(36 seconds
+          of training)</figcaption>
+      </figure>
+      <figure class="figure col-lg-4">
+        <img src="videos/cartpole_2.gif" class="figure-img img-fluid rounded">
+        <figcaption style="font-family:'Times New Roman';font-size:20px" class="figure-caption text-center">Episode 100
+        </figcaption>
+        <figcaption style="font-family:'Times New Roman';font-size:20px" class="figure-caption text-center">(72 seconds
+          of training)</figcaption>
+      </figure>
+    </div>-->
+  </div><br><br><br>
+
+
+
+  <!-- Bootstrap core JavaScript -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+    integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+    integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+    crossorigin="anonymous"></script>
+  <script>
+    // Copy BibTeX button logic (updated to target only <code>)
+    (function () {
+      var btn = document.getElementById('copy-bibtex');
+      if (!btn) return;
+      var original = btn.innerHTML;
+      var timeoutId = null;
+
+      function indicateCopied() {
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(function () {
+          btn.classList.remove('copied');
+          btn.innerHTML = original;
+        }, 1500);
+      }
+
+      btn.addEventListener('click', function () {
+        var codeEl = document.querySelector('#bibtex-content code');
+        if (!codeEl) return;
+        var text = codeEl.innerText.trim();
+
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            indicateCopied();
+          } catch (e) { /* silent */ }
+          document.body.removeChild(ta);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(indicateCopied).catch(fallback);
+        } else {
+          fallback();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
