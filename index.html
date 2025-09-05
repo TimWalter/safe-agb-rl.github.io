@@ -2,8 +2,33 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPSRVD4KQW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-QPSRVD4KQW');
+  </script>
+
   <!-- Title -->
   <title>Leveraging Analytic Gradients in Provably Safe Reinforcement Learning</title>
+
+  <!-- Color scheme hint for browsers (affects form controls, scrollbars in some UAs) -->
+  <meta name="color-scheme" content="light dark">
+
+
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('color-mode');
+        var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var mode = stored ? stored : (systemDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-bs-theme', mode);
+      } catch (e) { /* fail silent */ }
+    })();
+  </script>
 
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -20,37 +45,138 @@
     integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
 
-  <!-- Google Tag Manager -->
-  <script>(function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-NMSCV9J5');</script>
-  <!-- End Google Tag Manager -->
+  <link rel="preload" href="pipeline.svg" as="image">
+  <link rel="preload" href="main_results.svg" as="image">
+  <link rel="preload" href="pipeline_dark.svg" as="image">
+  <link rel="preload" href="main_results_dark.svg" as="image">
+
 
 </head>
 <style>
-  .emoji {
-    font-family: "Twemoji Mozilla", "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", "Android Emoji", "EmojiSymbols", sans-serif;
+  /* Theme variable sets */
+  :root[data-bs-theme="light"] {
+    --tw-body-bg: #ffffff;
+    --tw-body-color: #212529;
+    --tw-nav-bg: #3070b3;
+    --tw-link-color: #0a58ca;
+    --tw-link-hover: #084298;
+    --tw-code-bg: #f8f9fb;
+    --tw-code-border: #e2e6ea;
+    --tw-copy-btn-bg: rgba(255, 255, 255, 0.9);
+    --tw-copy-btn-border: #d0d7de;
+    --tw-copy-btn-hover-bg: #ffffff;
+    --tw-copy-btn-active-bg: #eef1f4;
+    --tw-copy-btn-success-bg: #d1e7dd;
+    --tw-copy-btn-success-border: #9ac7b3;
   }
 
+  :root[data-bs-theme="dark"] {
+    --tw-body-bg: #1f2227;
+    --tw-body-color: #e8e9eb;
+    --tw-nav-bg: #306fb383;
+    /* darker variant */
+    --tw-link-color: #66b3ff;
+    --tw-link-hover: #99ccff;
+    --tw-code-bg: #25292f;
+    --tw-code-border: #32363c;
+    --tw-copy-btn-bg: rgba(37, 41, 47, 0.85);
+    --tw-copy-btn-border: #3a3f46;
+    --tw-copy-btn-hover-bg: #31363c;
+    --tw-copy-btn-active-bg: #2a2e33;
+    --tw-copy-btn-success-bg: #244d3b;
+    --tw-copy-btn-success-border: #2d6f52;
+  }
+
+  /* Base body / text */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--tw-body-bg);
+    color: var(--tw-body-color);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Navbar */
+  .navbar {
+    background: var(--tw-nav-bg) !important;
+  }
+
+  .navbar-brand {
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+  }
+
+  .navbar-nav .nav-link {
+    font-size: 1.1rem;
+    text-decoration: none !important;
+    transition: color .15s ease;
+  }
+
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link:focus-visible {
+    color: #fff;
+  }
+
+  /* Optional toggle button style */
+  .color-mode-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-size: .85rem;
+    padding: .25rem .6rem;
+    border-radius: .4rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    line-height: 1.1;
+    transition: background .2s, border-color .2s;
+  }
+
+  :root[data-bs-theme="light"] .color-mode-toggle {
+    border-color: rgba(0, 0, 0, 0.35);
+    color: #212529;
+  }
+
+  .color-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  :root[data-bs-theme="light"] .color-mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  /* Links */
+  a {
+    text-decoration: none;
+    color: var(--tw-link-color);
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+    color: var(--tw-link-hover);
+  }
+
+  /* Code / BibTeX block */
   .code-block-wrapper {
     position: relative;
     margin-top: 0;
   }
 
   .bibtex-pre {
-    background: #f8f9fb;
-    border: none;
-    box-shadow: 0 0 0 1px #e2e6ea inset, 0 2px 4px rgba(0, 0, 0, 0.04);
+    background: var(--tw-code-bg);
+    border: 1px solid var(--tw-code-border);
     border-radius: 6px;
     padding: 14px 56px 14px 16px;
-    /* right padding leaves room for button overlap */
     overflow: auto;
-    font-size: 14px;
+    font-size: 0.9rem;
     line-height: 1.4;
     margin: 0;
   }
@@ -60,96 +186,194 @@
     padding: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     display: block;
-    /* ensures consistent top alignment */
   }
 
+  /* Copy button */
   .copy-icon-btn {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(2px);
-    border: 1px solid #d0d7de;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    background: var(--tw-copy-btn-bg);
+    border: 1px solid var(--tw-copy-btn-border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     padding: 4px 6px;
     cursor: pointer;
-    color: #555;
+    color: #bbb;
     line-height: 1;
     font-size: 14px;
     transition: background .15s, color .15s, border-color .15s;
     z-index: 2;
   }
 
+  :root[data-bs-theme="light"] .copy-icon-btn {
+    color: #555;
+  }
+
   .copy-icon-btn:hover {
-    background: #fff;
+    background: var(--tw-copy-btn-hover-bg);
+    color: #fff;
+  }
+
+  :root[data-bs-theme="light"] .copy-icon-btn:hover {
     color: #000;
   }
 
   .copy-icon-btn:active {
-    background: #eef1f4;
+    background: var(--tw-copy-btn-active-bg);
   }
 
   .copy-icon-btn.copied {
-    background: #d1e7dd;
-    border-color: #9ac7b3;
-    color: #2e7d32;
-  }
-  /* NEW: Larger navbar brand and links */
-  .navbar-brand {
-    font-size: 1.35rem;       /* default ~1.25rem; slight bump */
-    font-weight: 600;
-    letter-spacing: .5px;
-  }
-  .navbar-nav .nav-link {
-    font-size: 1.1rem;       /* subtle bump; keeps layout stable */
+    background: var(--tw-copy-btn-success-bg);
+    border-color: var(--tw-copy-btn-success-border);
+    color: #fff;
   }
 
-  /* Responsive tweak: don’t oversize on very small screens */
+  /* Emoji fallback */
+  .emoji {
+    font-family: "Twemoji Mozilla", "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", "Android Emoji", "EmojiSymbols", sans-serif;
+  }
+
+  /* Responsive tweak for very small screens */
   @media (max-width: 575.98px) {
-    .navbar-brand { font-size: 1.22rem; }
-    .navbar-nav .nav-link { font-size: 1rem; }
-    .abstract-text { font-size: 1.12rem; }
-  }
-  a {
-    text-decoration: none;
-    color: #0a58ca; /* Bootstrap 5 default link color */
-    transition: color .15s ease, text-decoration-color .15s ease;
-  }
-  a:hover,
-  a:focus-visible {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-  /* Optional: Make nav links keep current color without underline on hover */
-  .navbar-nav .nav-link {
-    text-decoration: none !important;
-  }
-  .navbar-nav .nav-link:hover,
-  .navbar-nav .nav-link:focus-visible {
-    text-decoration: none; /* keep navbar clean */
-    color: #fff; /* ensure contrast on hover */
+    .navbar-brand {
+      font-size: 1.22rem;
+    }
+
+    .navbar-nav .nav-link {
+      font-size: 1rem;
+    }
   }
 
-  /* If you also want project “action” links (e.g. [Paper] [Code]) to never underline: */
-  .paper-links a {
-    text-decoration: none;
+  /* --- Dark-mode helper for invert approach (Option A) --- */
+  :root[data-bs-theme="dark"] img.theme-invert {
+    filter: invert(1) brightness(1.15) contrast(0.95);
   }
-  .paper-links a:hover,
-  .paper-links a:focus-visible {
-    text-decoration: none;
-    filter: brightness(1.15);
+
+  /* --- Theme Toggle Switch Styles --- */
+  .theme-toggle-wrapper {
+    user-select: none;
+  }
+
+  .theme-switch {
+    position: relative;
+    width: 54px;
+    height: 28px;
+  }
+
+  .theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+
+  .switch-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3070b3, #243b55);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    font-size: 14px;
+    color: #222;
+    transition: background .4s;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  :root[data-bs-theme="dark"] .switch-slider {
+    background: linear-gradient(90deg, #243b55, #141e30);
+    color: #eee;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .switch-slider .icon {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .switch-slider .sun {
+    font-size: 0.85rem;
+  }
+
+  .switch-slider .moon {
+    font-size: 0.85rem;
+  }
+
+  .switch-slider::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .35);
+    transition: transform .35s cubic-bezier(.55, .09, .68, .53), background .35s;
+    z-index: 1;
+  }
+
+  :root[data-bs-theme="dark"] .switch-slider::before {
+    background: #f5f5f5;
+  }
+
+  /* Checked (manual dark) moves knob to right */
+  .theme-switch input:checked+.switch-slider::before {
+    transform: translateX(26px);
+  }
+
+  /* Auto mode indicator button */
+  .auto-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    font-size: 0.65rem;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    line-height: 1;
+    cursor: pointer;
+    letter-spacing: .5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: background .25s, color .25s, border-color .25s;
+  }
+
+  :root[data-bs-theme="light"] .auto-btn {
+    border-color: rgba(0, 0, 0, 0.45);
+    color: #222;
+  }
+
+  .auto-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  :root[data-bs-theme="light"] .auto-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+    color: #000;
+  }
+
+  .auto-btn.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+
+  :root[data-bs-theme="light"] .auto-btn.active {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
   }
 </style>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NMSCV9J5" height="0" width="0"
-      style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <!-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> -->
-  <nav class="navbar navbar-expand-md navbar-dark" style="background-color:#3070b3;">
+  <nav class="navbar navbar-expand-md navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="#">Safe AGB RL</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle"
@@ -158,22 +382,22 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarToggle">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#Abstract">Abstract</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#Paper">Paper</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#Results">Results</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#Additional Results">Additional Results</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#Abstract">Abstract</a></li>
+          <li class="nav-item"><a class="nav-link" href="#Paper">Paper</a></li>
+          <li class="nav-item"><a class="nav-link" href="#Results">Results</a></li>
+          <li class="nav-item"><a class="nav-link" href="#Additional Results">Additional Results</a></li>
         </ul>
+        <!-- Theme toggle -->
+        <div class="theme-toggle-wrapper ms-md-3 mt-3 mt-md-0 d-flex align-items-center">
+          <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
+            <label for="theme-toggle" class="switch-slider">
+              <span class="icon sun"><i class="fas fa-sun"></i></span>
+              <span class="icon moon"><i class="fas fa-moon"></i></span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -205,7 +429,8 @@
   <div class="container" style="padding-top: 10px; font-size: 20px">
     <div align="center">
       <div class="center">
-        <img class="img-responsive img-rounded" src="pipeline.svg" style="width:80%" alt="">
+        <img class="img-responsive img-rounded" data-theme-img data-light="pipeline.svg" data-dark="pipeline_dark.svg"
+          src="pipeline.svg" style="width:80%" alt="Pipeline">
       </div>
     </div>
   </div><br><br>
@@ -244,7 +469,7 @@
         <a href="https://www.ce.cit.tum.de/cps/members/prof-dr-ing-matthias-althoff/">Matthias Althoff</a>
 
         <i><a target="_blank" href="https://ojcsys.github.io/">
-            <font color="black">IEEE Open Journal of Control Systems (OJ-CSYS) 2025 </font>
+            <font color="gray">IEEE Open Journal of Control Systems (OJ-CSYS) 2025 </font>
           </a></i><br>
         <a target="_blank" href="https://openreview.net/forum?id=ZSKRQMvttc">[Paper]</a>&nbsp; <!-- TODO -->
         <a target="_blank" href="https://arxiv.org/abs/2506.01665">[Arxiv]</a>&nbsp;
@@ -292,7 +517,8 @@
     <h5> Learning with Short-Horizon Actor-Critic in unsafe training and safeguarded training. </h5>
     <br>
     <figure class="figure">
-      <img src="main_results.svg" class="figure-img img-fluid rounded">
+      <img data-theme-img data-light="main_results.svg" data-dark="main_results_dark.svg" src="main_results.svg"
+        class="figure-img img-fluid rounded" alt="Main Results">
     </figure>
   </div><br><br><br>
 
@@ -382,6 +608,85 @@
       });
     })();
   </script>
+  <script>
+(function () {
+  var STORAGE_KEY = 'color-mode';
+  var toggle = document.getElementById('theme-toggle');
+
+  function systemMode() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function storedMode() {
+    return localStorage.getItem(STORAGE_KEY); // 'dark' | 'light' | null
+  }
+
+  function swapThemeImages(mode) {
+    document.querySelectorAll('[data-theme-img]').forEach(function(img){
+      var lightSrc = img.getAttribute('data-light');
+      var darkSrc  = img.getAttribute('data-dark');
+
+      // Heuristic fallback: if no data-dark but file.svg exists and file_dark.svg likely exists
+      if (!darkSrc && lightSrc && lightSrc.endsWith('.svg')) {
+        var guess = lightSrc.replace(/\.svg$/,'_dark.svg');
+        if (guess !== lightSrc) darkSrc = guess;
+      }
+
+      var target = (mode === 'dark') ? darkSrc : lightSrc;
+      if (target && img.getAttribute('src') !== target) {
+        img.setAttribute('src', target);
+      }
+    });
+  }
+
+  function apply(mode) {
+    document.documentElement.setAttribute('data-bs-theme', mode);
+    if (toggle) {
+      // checked = dark
+      if (!storedMode()) {
+        toggle.checked = (systemMode() === 'dark');
+      } else {
+        toggle.checked = (mode === 'dark');
+      }
+    }
+    swapThemeImages(mode);
+    // Custom event if you later want others to listen
+    document.dispatchEvent(new CustomEvent('theme-changed', { detail: { mode: mode }}));
+  }
+
+  function setOverride(valOrNull) {
+    if (valOrNull === null) {
+      localStorage.removeItem(STORAGE_KEY);
+      apply(systemMode());
+    } else {
+      localStorage.setItem(STORAGE_KEY, valOrNull);
+      apply(valOrNull);
+    }
+  }
+
+  // Initial
+  apply(storedMode() || systemMode());
+
+  // System changes (only when no stored override)
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', function (e) {
+    if (!storedMode()) {
+      apply(e.matches ? 'dark' : 'light');
+    }
+  });
+
+  if (toggle) {
+    toggle.addEventListener('change', function () {
+      var wantingDark = toggle.checked;
+      setOverride(wantingDark ? 'dark' : 'light');
+    });
+  }
+
+  // If images load after script (rare), ensure a late pass
+  window.addEventListener('load', function(){
+    swapThemeImages(document.documentElement.getAttribute('data-bs-theme'));
+  });
+})();
+</script>
 </body>
 
 </html>
